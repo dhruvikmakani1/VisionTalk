@@ -3,7 +3,8 @@ import { io } from 'socket.io-client'
 import {
   FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash,
   FaDesktop, FaComment, FaVolumeHigh, FaPhone, FaCopy,
-  FaArrowRight, FaPlus, FaPaperPlane, FaXmark
+  FaArrowRight, FaPlus, FaPaperPlane, FaXmark,
+  FaDeleteLeft, FaArrowRotateLeft
 } from 'react-icons/fa6'
 import './VideoCall.css'
 
@@ -446,7 +447,7 @@ export default function VideoCall() {
         {/* ── Videos ── */}
         <div className="videos-section">
           {/* Remote Video */}
-          <div className="remote-video-container glass">
+          <div className="remote-video-container">
             <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
             {!remotePeer && (
               <div className="waiting-overlay">
@@ -464,19 +465,30 @@ export default function VideoCall() {
           </div>
 
           {/* Local Video (PiP) */}
-          <div className="local-video-container glass">
+          <div className="local-video-container">
             <video ref={localVideoRef} autoPlay playsInline muted className="local-video" />
-            {/* Local Transcription */}
-            {localTranscription && (
-              <div className="transcription-bar local-transcription">
-                <span className="transcription-text">{localTranscription}</span>
+            {/* Local Transcription Overlay */}
+            <div className="transcription-bar local-transcription interactive">
+              <span className="transcription-text">
+                {localTranscription || <span className="text-muted">Waiting for signs...</span>}
+              </span>
+              <div className="transcription-actions">
+                <button className="btn-icon-sm" onClick={() => setLocalTranscription(prev => prev.slice(0, -1))} title="Backspace">
+                  <FaDeleteLeft />
+                </button>
+                <button className="btn-icon-sm" onClick={() => setLocalTranscription(prev => prev + ' ')} title="Space">
+                  Space
+                </button>
+                <button className="btn-icon-sm" onClick={() => setLocalTranscription('')} title="Clear">
+                  <FaArrowRotateLeft />
+                </button>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
         {/* ── Controls ── */}
-        <div className="call-controls glass">
+        <div className="call-controls">
           <button
             className={`control-btn ${!audioEnabled ? 'off' : ''}`}
             onClick={toggleAudio}
@@ -523,39 +535,41 @@ export default function VideoCall() {
           </button>
         </div>
 
-        {/* ── Chat Panel ── */}
+        {/* ── Chat Modal ── */}
         {chatOpen && (
-          <div className="chat-panel glass">
-            <div className="chat-header">
-              <h3>💬 Chat</h3>
-              <button className="chat-close" onClick={() => setChatOpen(false)}>
-                <FaXmark />
-              </button>
-            </div>
-            <div className="chat-messages">
-              {messages.length === 0 && (
-                <p className="chat-empty">No messages yet. Say hi!</p>
-              )}
-              {messages.map((msg, i) => (
-                <div key={i} className={`chat-msg ${msg.type}`}>
-                  <span className="msg-author">{msg.type === 'local' ? 'You' : msg.username}</span>
-                  <span className="msg-text">{msg.message}</span>
-                </div>
-              ))}
-            </div>
-            <div className="chat-input-area">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type a message..."
-                className="chat-input"
-                id="chat-input"
-              />
-              <button className="btn-primary sm" onClick={sendMessage}>
-                <FaPaperPlane />
-              </button>
+          <div className="chat-modal-overlay" onClick={() => setChatOpen(false)}>
+            <div className="chat-panel glass" onClick={(e) => e.stopPropagation()}>
+              <div className="chat-header">
+                <h3>💬 Chat</h3>
+                <button className="chat-close" onClick={() => setChatOpen(false)}>
+                  <FaXmark />
+                </button>
+              </div>
+              <div className="chat-messages">
+                {messages.length === 0 && (
+                  <p className="chat-empty">No messages yet. Say hi!</p>
+                )}
+                {messages.map((msg, i) => (
+                  <div key={i} className={`chat-msg ${msg.type}`}>
+                    <span className="msg-author">{msg.type === 'local' ? 'You' : msg.username}</span>
+                    <span className="msg-text">{msg.message}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="chat-input-area">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Type a message..."
+                  className="chat-input"
+                  id="chat-input"
+                />
+                <button className="btn-primary sm" onClick={sendMessage}>
+                  <FaPaperPlane />
+                </button>
+              </div>
             </div>
           </div>
         )}

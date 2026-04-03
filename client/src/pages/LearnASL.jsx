@@ -56,16 +56,22 @@ const ASL_DESCRIPTIONS = {
   '9': 'Touch thumb to index finger, other fingers up',
 }
 
-// Hand emoji representations
+// Hand emoji representations (Fallback for numbers)
 const HAND_EMOJIS = {
-  'A': '✊', 'B': '🖐', 'C': '🤏', 'D': '👆', 'E': '✊',
-  'F': '👌', 'G': '👈', 'H': '🤞', 'I': '🤙', 'J': '🤙',
-  'K': '✌️', 'L': '🤟', 'M': '✊', 'N': '✊', 'O': '👌',
-  'P': '👇', 'Q': '👇', 'R': '🤞', 'S': '✊', 'T': '✊',
-  'U': '✌️', 'V': '✌️', 'W': '🤟', 'X': '☝️', 'Y': '🤙',
-  'Z': '☝️',
   '0': '👌', '1': '☝️', '2': '✌️', '3': '🤟', '4': '🖐',
   '5': '🖐', '6': '🤙', '7': '🤟', '8': '🤞', '9': '👌',
+}
+
+// Map characters to their actual sign images in /public/sign
+const getSignImage = (char) => {
+  if (char === 'J') return '/sign/J.jpg';
+  const digits = '0123456789';
+  if (digits.includes(char)) {
+    if (char === '0') return '/sign/0.webp';
+    return `/sign/${char}.png`;
+  }
+  if (char >= 'A' && char <= 'Z') return `/sign/${char}.webp`;
+  return null;
 }
 
 export default function LearnASL() {
@@ -126,7 +132,13 @@ export default function LearnASL() {
               style={{ animationDelay: `${index * 0.03}s` }}
               id={`sign-${sign.char}`}
             >
-              <div className="sign-emoji">{HAND_EMOJIS[sign.char] || '✋'}</div>
+              <div className="sign-visual">
+                {getSignImage(sign.char) ? (
+                  <img src={getSignImage(sign.char)} alt={`ASL ${sign.char}`} className="sign-img" />
+                ) : (
+                  <span className="sign-emoji">{HAND_EMOJIS[sign.char] || '✋'}</span>
+                )}
+              </div>
               <div className="sign-char">{sign.char}</div>
               <div className="sign-type">{sign.type}</div>
             </button>
@@ -138,7 +150,13 @@ export default function LearnASL() {
           <div className="sign-detail-overlay" onClick={() => setSelectedSign(null)}>
             <div className="sign-detail glass" onClick={(e) => e.stopPropagation()}>
               <button className="detail-close" onClick={() => setSelectedSign(null)}>×</button>
-              <div className="detail-emoji">{HAND_EMOJIS[selectedSign.char] || '✋'}</div>
+              <div className="detail-visual">
+                {getSignImage(selectedSign.char) ? (
+                  <img src={getSignImage(selectedSign.char)} alt={`ASL ${selectedSign.char}`} className="detail-img" />
+                ) : (
+                  <span className="detail-emoji">{HAND_EMOJIS[selectedSign.char] || '✋'}</span>
+                )}
+              </div>
               <h2 className="detail-char gradient-text">{selectedSign.char}</h2>
               <span className="detail-type">{selectedSign.type === 'letter' ? 'Alphabet Letter' : 'Number'}</span>
               <div className="detail-divider" />

@@ -133,12 +133,9 @@ def predict():
         })
         
     except Exception as e:
-<<<<<<< HEAD
-=======
         print(f"[INTERNAL ERROR] Inference failed: {e}")
         import traceback
         traceback.print_exc()
->>>>>>> e10681a (dockerfile)
         return jsonify({'error': str(e)}), 500
 
 
