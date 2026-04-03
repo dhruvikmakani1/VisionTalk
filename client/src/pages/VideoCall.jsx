@@ -7,8 +7,10 @@ import {
 } from 'react-icons/fa6'
 import './VideoCall.css'
 
-const SIGNALING_URL = 'http://localhost:3001'
-const BACKEND_URL = 'http://localhost:5000'
+
+const SIGNALING_URL = import.meta.env.VITE_APP_SIGNALING_URL || 'http://localhost:3001'
+const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:5000'
+
 
 const ICE_SERVERS = {
   iceServers: [

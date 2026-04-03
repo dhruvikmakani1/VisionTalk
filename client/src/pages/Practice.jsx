@@ -3,7 +3,8 @@ import { FaCamera, FaCameraRotate, FaBullseye, FaTrophy, FaArrowRotateLeft, FaDe
 import './Practice.css'
 
 /* global Hands, Camera */
-const BACKEND_URL = 'http://localhost:5000'
+const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:5000'
+
 
 export default function Practice() {
   const videoRef = useRef(null)

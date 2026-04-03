@@ -1,0 +1,42 @@
+services:
+  client:
+    build:
+      context: ./client
+      args:
+        - VITE_APP_SIGNALING_URL=https://${PUBLIC_IP}
+        - VITE_APP_BACKEND_URL=https://${PUBLIC_IP}
+    expose:
+      - "80"
+    depends_on:
+      - signaling
+      - server
+
+  server:
+    build:
+      context: ./server
+    expose:
+      - "5000"
+    environment:
+      - MODEL_PATH=/model1.p
+
+  signaling:
+    build:
+      context: ./signaling
+    expose:
+      - "3001"
+    environment:
+      - PORT=3001
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: visiontalk-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    environment:
+      - PUBLIC_IP=${PUBLIC_IP}
+    depends_on:
+      - client

@@ -15,7 +15,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # ─── Load Model ────────────────────────────────────────────────
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'model1.p')
+MODEL_PATH = os.environ.get('MODEL_PATH', os.path.join(os.path.dirname(__file__), '..', 'model1.p'))
+
 
 try:
     with open(MODEL_PATH, 'rb') as f:
@@ -29,6 +30,8 @@ try:
         print(f"[SUCCESS] Labels: {labels_dict}")
 except Exception as e:
     print(f"[ERROR] Failed to load model: {e}")
+    import traceback
+    traceback.print_exc()
     model = None
     labels_dict = None
 
@@ -130,6 +133,12 @@ def predict():
         })
         
     except Exception as e:
+<<<<<<< HEAD
+=======
+        print(f"[INTERNAL ERROR] Inference failed: {e}")
+        import traceback
+        traceback.print_exc()
+>>>>>>> e10681a (dockerfile)
         return jsonify({'error': str(e)}), 500
 
 
