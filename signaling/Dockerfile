@@ -7,6 +7,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3001
+# Koyeb uses PORT env var (default 8000); signaling reads process.env.PORT
+EXPOSE 8000
 
 CMD ["npm", "start"]
