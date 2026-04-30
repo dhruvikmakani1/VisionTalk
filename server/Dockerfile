@@ -11,10 +11,10 @@ COPY . .
 
 # Copy the model from the current directory
 COPY model1.p /model1.p
-# And update app.py to look in /model1.p or use an env var.
 
 ENV MODEL_PATH=/model1.p
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+# Use gunicorn for production
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "app:app"]
